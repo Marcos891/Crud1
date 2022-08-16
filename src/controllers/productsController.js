@@ -6,6 +6,11 @@ const controller = {
 	// Root - Show all products
 	index: (req, res) => {
 		// Do the magic
+		const products = loadProducts();
+		return res.render('products', {
+			products,
+			toThousand
+		})
 	},
 
 	// Detail - Detail from one product
@@ -31,17 +36,17 @@ const controller = {
 		const products = loadProducts();
 
 		const newProduct = {
-			id: (products[products.length - 1].id +1),
+			id : (products[products.length - 1].id +1),
 			name: name.trim(),
+			description: description.trim(),
 			price: +price,
 			discount: +discount,
-			description: description.trim(),
-			category,
-			image: 'default-image.png'
+			image: 'default-image.png',
+			category
 		}
-		const productsModify = {...products, newProduct};
+		const productsModify = [...products, newProduct];
 		storeProducts(productsModify)
-		return res.redirect('/')
+		return res.redirect('/products')
 
 	},
 
@@ -81,6 +86,12 @@ const controller = {
 	// Delete - Delete one product from DB
 	destroy: (req, res) => {
 		// Do the magic
+		const products = loadProducts();
+
+		const {id} = req.params;
+		const productDelete = products.filter(product => product.id !== +id);
+		storeProducts(productDelete);
+		return res.redirect('/products');
 	}
 };
 
